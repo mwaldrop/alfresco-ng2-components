@@ -94,8 +94,17 @@ export class ActivitiContent implements OnChanges {
     }
 
     openViewer(content: ContentLinkModel) {
-        this.contentClick.emit(content);
-        this.logService.info('Content clicked' + content.id);
+        this.formService.getFileRawContent(content.id).subscribe(
+            (response: Blob) => {
+                let contentRawUrl = this.createUrlPreview(response);
+                content.contentRawUrl = contentRawUrl;
+                this.contentClick.emit(content);
+                this.formService.formContentClicked.next(content);
+            },
+            error => {
+                this.logService.error(error);
+            }
+        );
     }
 
     /**
